@@ -1,0 +1,164 @@
+<div class="search-container">
+    <!-- Search Input -->
+    <div class="search-input-group">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search resources, services, and docs..."
+        [formControl]="searchTerm"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        aria-label="Search Azure"
+      />
+      <button
+        *ngIf="searchTerm.value"
+        class="clear-button"
+        (click)="clearSearch($event)"
+        aria-label="Clear search"
+      >
+        × <!-- Simple 'X' character -->
+      </button>
+    </div>
+  
+    <!-- Suggestions Dropdown -->
+    <div class="search-dropdown" *ngIf="isDropdownVisible">
+  
+      <!-- Loading Indicator -->
+      <div *ngIf="isLoading" class="loading-indicator">Searching...</div>
+  
+      <!-- Initial View (No Search Term OR Cleared) -->
+      <ng-container *ngIf="!searchTerm.value && !isLoading">
+        <!-- Category Chiclets (Initial) -->
+        <div class="chiclet-container" *ngIf="getCurrentCategories().length > 1">
+          <ng-container *ngFor="let category of getCurrentCategories(); trackBy: trackByCategory">
+            <!-- Place the button inside, with the *ngIf condition -->
+            <button
+              *ngIf="category !== 'All'"
+              class="chiclet"
+              [class.active]="activeCategory === category"
+              (click)="selectCategory(category, $event)"
+              [disabled]="true"
+            >
+              {{ category }} ({{ getCategoryCount(category) }})
+            </button>
+          </ng-container>
+        </div>
+  
+        <!-- Recent Searches -->
+        <div class="section recent-searches-section">
+          <h3 class="section-heading">Recent Searches</h3>
+          <ul *ngIf="recentSearches.length > 0; else noRecent" class="recent-list">
+            <li
+              *ngFor="let term of recentSearches; trackBy: trackByTerm"
+              class="recent-search-item"
+              (click)="selectRecentSearch(term, $event)"
+              tabindex="0"
+              (keydown.enter)="selectRecentSearch(term, $event)"
+              (keydown.space)="selectRecentSearch(term, $event)"
+            >
+              {{ term }}
+            </li>
+          </ul>
+          <ng-template #noRecent>
+            <p class="no-recent">No recent searches.</p>
+          </ng-template>
+        </div>
+      </ng-container>
+  
+      <!-- Search Results View -->
+      <ng-container *ngIf="searchTerm.value && !isLoading">
+        <!-- Category Chiclets (Filtered) -->
+         <div class="chiclet-container" *ngIf="getCurrentCategories().length > 1">
+           <button
+             *ngFor="let category of getCurrentCategories(); trackBy: trackByCategory"
+             class="chiclet"
+             [class.active]="activeCategory === category"
+             (click)="selectCategory(category, $event)"
+           >
+             {{ category }} ({{ getCategoryCount(category) }})
+           </button>
+        </div>
+  
+        <!-- Results Area -->
+        <div *ngIf="filteredResults.length > 0; else noResults" class="results-area">
+          <!-- Grouped Results -->
+          <div
+            *ngFor="let categoryKey of getGroupedResultKeys(); trackBy: trackByCategory"
+            class="result-group"
+            [hidden]="activeCategory !== 'All' && activeCategory !== categoryKey"
+          >
+          <div class="category-header-row">
+            <h4 class="section-heading category-heading">{{ categoryKey }}</h4>
+             <!-- *** ADD THIS SEPARATOR SPAN *** -->
+             <span class="header-separator"></span>
+            <!-- Moved Links Container -->
+            <div class="category-header-actions" *ngIf="(activeCategory === 'All' || activeCategory === categoryKey) && (shouldShowMoreLink(categoryKey) || shouldShowCategoryShowAllLink(categoryKey))">
+                <a
+                  *ngIf="shouldShowMoreLink(categoryKey)"
+                  class="show-more-link header-link"
+                  (click)="showMore(categoryKey, $event)"
+                  [class.disabled]="!shouldShowMoreLink(categoryKey)"
+                  [attr.aria-disabled]="!shouldShowMoreLink(categoryKey)" 
+                  tabindex="{{ !shouldShowMoreLink(categoryKey) ? -1 : 0 }}"
+                  >Show more</a
+                >
+                <a
+                  *ngIf="shouldShowCategoryShowAllLink(categoryKey)"
+                  class="show-all-category-link header-link"
+                  (click)="navigateToCategorySearch(categoryKey, $event)"
+                  >Show all {{ getTotalResultsForCategory(categoryKey) }}</a
+                > <!-- Removed ' results' for brevity in header -->
+            </div>
+        </div>
+            <ul class="result-list">
+              <li
+                *ngFor="let item of getVisibleResultsForCategory(categoryKey); trackBy: trackById"
+                class="result-item"
+                (click)="selectResultItem(item, $event)"
+                tabindex="0"
+                (keydown.enter)="selectResultItem(item, $event)"
+                (keydown.space)="selectResultItem(item, $event)"
+              >
+                <!-- <span class="result-icon" aria-hidden="true">{{ getIconForType(item.type) }}</span> -->
+                              <!-- *** ADD Friendly ID Span BEFORE details div *** -->
+                              <span class="result-friendly-id">{{ item.friendlyId }}</span>
+                <div class="result-details">
+                  <span class="result-name" [innerHTML]="item.name | highlight: (searchTerm.value || '')"></span>
+                </div>
+              </li>
+            </ul>
+            <!-- Show More / Show All Links for Category -->
+            <!-- <div class="category-actions" *ngIf="activeCategory === 'All' || activeCategory === categoryKey">
+               <a
+                *ngIf="shouldShowMoreLink(categoryKey)"
+                class="show-more-link"
+                (click)="showMore(categoryKey, $event)"
+                >Show more</a
+              >
+               <a
+                *ngIf="shouldShowAllCategoryLink(categoryKey)"
+                class="show-all-category-link"
+                (click)="showAllCategoryResults(categoryKey, $event)"
+                >Show all {{ getTotalResultsForCategory(categoryKey) }} results</a
+              >
+            </div> -->
+          </div>
+  
+          <!-- Overall "Show All" Button -->
+          <div class="show-all-results-container" *ngIf="filteredResults.length > 0">
+            <!-- Pass $event to handler -->
+            <button class="show-all-results-button" (click)="showAllResultsPage($event)">
+              Show all {{ filteredResults.length }} results for "{{ searchTerm.value }}"
+            </button>
+          </div>
+        </div>
+  
+        <!-- No Results Message -->
+        <ng-template #noResults>
+          <p class="no-results">No results found for "{{ searchTerm.value }}".</p>
+        </ng-template>
+  
+      </ng-container>
+  
+    </div> <!-- End Dropdown -->
+  </div>

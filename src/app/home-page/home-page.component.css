@@ -1,0 +1,141 @@
+/* home-page.component.css */
+:host {
+    display: block; /* Ensure component takes block space */
+    background-color: #f8f9fa; /* Light background for the whole page */
+    min-height: 100vh;
+  }
+  
+  .home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center children horizontally */
+    padding: 40px 20px;
+    box-sizing: border-box;
+  }
+  
+  .main-title {
+    font-weight: 300; /* Lighter title */
+    font-size: 2.5em;
+    color: #343a40;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  
+  /* Style the search component instance on this page */
+  app-azure-search {
+    display: block;
+    width: 100%; /* Allow it to take width */
+    max-width: 600px; /* Increase max-width */
+    margin-bottom: 50px; /* More space below search */
+    /* Centering is handled by .home-container's align-items */
+  }
+  
+    /* Cards container - revert to row for side-by-side */
+    .cards-container {
+        display: flex;
+        /* flex-direction: column; <-- REMOVE or change to row */
+        flex-direction: row; /* Explicitly set to row */
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        justify-content: center; /* Center the cards horizontally in the container */
+        gap: 30px;
+        width: 100%;
+        /* Adjust max-width to accommodate two cards side-by-side comfortably */
+        max-width: 1200px; /* Increase container width */
+        /* align-items: center; <-- Remove this if you want cards top-aligned */
+        align-items: flex-start; /* Align cards to the top if they have different heights */
+      }
+  
+      .card {
+        /* ... keep other card styles (background, border, flex-basis, etc.) ... */
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 25px 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        flex-basis: calc(50% - 15px);
+        flex-grow: 0;
+        flex-shrink: 1;
+        max-width: 550px;
+        box-sizing: border-box;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        min-width: 300px;
+  
+        /* *** ADD FIXED HEIGHT AND OVERFLOW *** */
+        height: 50vh;         /* Set fixed height to 50% of viewport height */
+        overflow-y: auto;     /* Add vertical scrollbar if content exceeds height */
+      }
+  .card:hover {
+     /* Optional: subtle lift effect */
+     /* transform: translateY(-3px); */
+     /* box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); */
+  }
+  
+  .card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    font-weight: 500; /* Medium weight */
+    color: #005a9e; /* Darker Azure blue */
+    border-bottom: 1px solid #e9ecef; /* Lighter border */
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .card-icon {
+     margin-right: 10px;
+     font-size: 1.3em;
+     color: var(--azure-blue); /* Use theme blue */
+  }
+  
+  /* Styling for ngx-markdown output within cards */
+  .card markdown {
+    display: block; /* Ensure it takes block space */
+    font-size: 0.98em;
+    line-height: 1.7;
+    color: #495057; /* Dark gray text */
+  }
+  
+  .card markdown p {
+    margin-bottom: 1em;
+  }
+  
+  .card markdown strong {
+     color: #212529; /* Slightly darker for bold */
+  }
+  
+  .card markdown ul {
+     padding-left: 25px;
+     margin-top: 0.5em;
+     margin-bottom: 1em;
+  }
+   .card markdown li {
+     margin-bottom: 0.5em;
+   }
+  
+  /* Ensure pre/code blocks wrap correctly */
+  .card markdown pre {
+    background-color: #f1f3f5; /* Lighter code background */
+    border: 1px solid #e9ecef;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-size: 0.9em;
+    line-height: 1.5;
+    white-space: pre-wrap;       /* Allow wrapping */
+    word-break: break-word;      /* Break long words */
+  }
+  
+  .card markdown code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    background-color: transparent; /* Code inside pre doesn't need bg */
+    padding: 0;
+  }
+  
+  /* Style for inline code (if used in markdown) */
+  .card markdown :not(pre) > code {
+     background-color: #e9ecef;
+     padding: 0.2em 0.4em;
+     border-radius: 3px;
+     font-size: 90%;
+  }

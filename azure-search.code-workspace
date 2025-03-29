@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "azure-search",
+			"path": "E:/azure-search"
+		}
+	],
+	"settings": {
+		"karateRunner.tests.toTargetByGlob": "",
+		"java.configuration.updateBuildConfiguration": "interactive",
+		"java.debug.settings.onBuildFailureProceed": true,
+		"java.compile.nullAnalysis.mode": "disabled"
+	}
+}

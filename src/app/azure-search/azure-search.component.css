@@ -1,0 +1,321 @@
+:host {
+    display: block; /* Ensure the component takes up block space */
+    font-family: 'Montserrat', sans-serif; /* Updated font */
+    font-size: 14px;
+    color: #333;
+  
+    /* Color and Style Variables */
+    --azure-blue: #0078d4;
+    --azure-focus-glow: rgba(0, 120, 212, 0.3);
+    --border-color: #ccc;
+    --dropdown-bg: #ffffff;
+    --hover-bg: #f0f0f0;
+    --initial-chiclet-bg: #e9e9e9; /* Specific gray for initial/non-active chiclets */
+    --chiclet-selected-search-bg: #005a9e; /* Darker blue for selected chiclet during search */
+    --chiclet-active-color: #ffffff; /* Text color for active/selected chiclets */
+    --text-muted: #666;
+  
+    /* Component Layout/Centering */
+    /* margin: 20px auto; Centers the component horizontally with 20px top/bottom margin */
+    /* width: 350px; Defines the width for centering */
+    /* max-width: 100%; Prevents overflow on smaller screens */
+  }
+  
+  .search-container {
+    position: relative;
+    /* width: 350px;
+    max-width: 100%; */
+  }
+  
+  .search-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-input {
+    flex-grow: 1;
+    padding: 8px 30px 8px 12px; /* Right padding for clear button */
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .search-input:focus {
+    border-color: var(--azure-blue);
+    box-shadow: 0 0 0 2px var(--azure-focus-glow);
+  }
+  
+  .clear-button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 6px;
+    cursor: pointer;
+    color: #555;
+  }
+  
+  .clear-button:hover {
+      color: #000;
+  }
+  
+  .search-dropdown {
+    position: absolute;
+    top: calc(100% + 4px); /* Position below input with small gap */
+    left: 0;
+    width: 100%; /* Match input width */
+    background-color: var(--dropdown-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    z-index: 1000;
+    max-height: 450px; /* Limit dropdown height */
+    overflow-y: auto;
+    padding-bottom: 8px; /* Space at the bottom */
+  }
+  
+  .loading-indicator,
+  .no-results,
+  .no-recent {
+      padding: 16px;
+      text-align: center;
+      color: var(--text-muted);
+  }
+  
+  .chiclet-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .chiclet {
+    /* Keep base styles: border-radius, padding, margin, font-size, cursor, transition, white-space */
+    border: none;
+    border-radius: 16px;
+    padding: 4px 10px;
+    margin: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+  
+    /* Default background for active search term (will be overridden by .active and :disabled) */
+    background-color: var(--initial-chiclet-bg);
+    color: #333;
+  }
+  
+  .chiclet:hover {
+    background-color: #d1cfcd;
+  }
+  
+  .chiclet:disabled {
+    background-color: var(--initial-chiclet-bg); /* Specific gray */
+    color: #555; /* Slightly muted text for disabled */
+    cursor: not-allowed;
+    opacity: 1; /* <--- Ensure full opacity */
+  }
+  /* Override default search bg color when it's the ACTIVE/SELECTED chiclet */
+  .chiclet.active {
+    background-color: var(--chiclet-selected-search-bg); /* Use the darker blue */
+    color: var(--chiclet-active-color); /* Keep white text */
+    font-weight: 600;
+  }
+  /* Hover effect only for non-disabled chiclets */
+  .chiclet:not(:disabled):hover {
+    background-color: #d1cfcd; /* Slightly darker gray on hover */
+  }
+  .chiclet:not(:disabled).active:hover {
+    background-color: #004578; /* Even darker blue on hover for selected */
+  }
+  /* Style for the bolded (matched) text within the result name */
+  .result-name b {
+    color: var(--azure-blue); /* Use Azure blue for the matched text */
+    /* Reset font-weight just in case of nested bold issues, though unlikely */
+    /* font-weight: 600; Ensure it maintains the bold from the parent/b tag */
+  }
+  
+  /* Keep the base style for result name */
+  .result-name {
+    /* font-weight: 600; Base name is bold */
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     /* Base color is inherited (default #333) */
+  }
+  
+  .section {
+      padding: 8px 0; /* Vertical padding for sections */
+  }
+  
+  .section-heading {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 8px 16px 4px 16px;
+    margin: 0;
+  }
+  
+  /* *** NEW STYLES FOR HEADER ROW *** */
+  .category-header-row {
+    display: flex;
+    align-items: center; /* Keep vertical alignment */
+    padding: 8px 16px 4px 16px;
+    /* border-bottom: 1px solid #eee; */ /* Removed border */
+    /* margin-bottom: 4px; */ /* Removed margin for tighter spacing */
+    gap: 8px;
+  }
+  
+  /* *** ADJUST HEADING STYLES *** */
+  .category-heading {
+    color: #333;
+    margin: 0;
+    padding: 0;
+    /* Remove flex-grow: 1; Make it take only its natural width */
+    white-space: nowrap; /* Prevent heading wrapping */
+    flex-shrink: 0; /* Prevent heading shrinking if space is tight */
+  }
+  
+  /* *** NEW SEPARATOR STYLES *** */
+  .header-separator {
+    flex-grow: 1; /* Allows this span to take up all available horizontal space */
+    height: 1px; /* The thickness of the line */
+    background-color: #e0e0e0; /* Line color, adjust as needed (lighter than border) */
+    margin: 0 8px; /* Add horizontal space around the line */
+  }
+  
+  /* *** ADJUST ACTIONS CONTAINER STYLES *** */
+  .category-header-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Keep actions from shrinking */
+    /* Remove margin-left: 16px; Gap handles spacing now */
+  }
+  
+  .recent-list,
+  .result-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .recent-search-item,
+  .result-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    gap: 8px; /* Add gap for spacing between icon, id, details */
+  }
+  
+  .recent-search-item:hover,
+  .result-item:hover,
+  .recent-search-item:focus, /* Added focus style */
+  .result-item:focus {
+    background-color: var(--hover-bg);
+    outline: none; /* Remove default focus outline if customizing */
+  }
+  
+  .result-icon {
+    /* margin-right: 10px; */
+    font-size: 16px; /* Adjust if needed */
+    width: 20px; /* Ensure consistent alignment */
+    text-align: center;
+    flex-shrink: 0; /* Prevent icon shrinking */
+  }
+  
+  /* *** ADD Styles for Friendly ID *** */
+  .result-friendly-id {
+    font-size: 13px; /* Slightly smaller */
+    color: var(--text-muted); /* Muted color */
+    white-space: nowrap; /* Prevent wrapping */
+    flex-shrink: 0; /* Prevent shrinking */
+  }
+  
+  
+  .result-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Allow details to take remaining space */
+    overflow: hidden; /* Prevent long names from breaking layout */
+  }
+  
+  .result-name {
+    /* font-weight: 600; Slightly bolder */
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis; /* Add ellipsis for long names */
+  }
+  
+  .result-type {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  
+  
+  .show-more-link,
+  .show-all-category-link {
+    font-size: 12px;
+    color: var(--azure-blue);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  
+  .header-link {
+    margin-left: 12px; /* Space between "Show more" and "Show all" */
+  }
+  .header-link:first-child {
+    margin-left: 0;
+  }
+  
+  .show-more-link:hover,
+  .show-all-category-link:hover {
+   text-decoration: underline;
+  }
+  
+  /* *** ADDED: Style for the disabled "Show more" link *** */
+  .show-more-link.disabled {
+    color: var(--text-muted); /* Gray out the text */
+    pointer-events: none; /* Prevent clicks */
+    text-decoration: none; /* Remove underline if present */
+    cursor: default;
+  }
+  
+  .show-all-results-container {
+      border-top: 1px solid #eee;
+      padding: 12px 16px 8px 16px; /* Add top padding */
+      margin-top: 8px; /* Space above the button */
+  }
+  
+  .results-area {
+    padding-top: 4px;
+  }
+  
+  .show-all-results-button {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      background-color: transparent;
+      border: 1px solid var(--azure-blue);
+      color: var(--azure-blue);
+      text-align: center;
+      cursor: pointer;
+      border-radius: 2px;
+      font-size: 14px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .show-all-results-button:hover {
+      background-color: var(--azure-blue);
+      color: white;
+  }

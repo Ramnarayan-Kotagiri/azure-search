@@ -1,0 +1,36 @@
+<!-- home-page.component.html -->
+<div class="home-container">
+
+    <!-- Title can be styled more -->
+    <h1 class="main-title">Azure Search Experience</h1>
+  
+    <!-- The search component - its width/centering is controlled by CSS below -->
+    <app-azure-search></app-azure-search>
+  
+    <!-- Container for vertically stacked cards -->
+    <div class="cards-container">
+  
+      <!-- Card 1: Prompt -->
+      <div class="card prompt-card">
+        <h2>
+            <span class="card-icon"><i class="fas fa-lightbulb"></i></span> <!-- fas for Solid style -->
+
+          Prompt Used
+        </h2>
+        <!-- Use the markdown directive -->
+        <markdown [data]="promptCardMarkdown"></markdown>
+      </div>
+  
+      <!-- Card 2: Search Examples -->
+      <div class="card examples-card">
+        <h2>
+            <span class="card-icon"><i class="fas fa-search"></i></span> <!-- fas for Solid style -->
+          Search Examples
+        </h2>
+        <!-- Use the markdown directive -->
+        <markdown [data]="searchExamplesCardMarkdown"></markdown>
+      </div>
+  
+    </div>
+  
+  </div>
