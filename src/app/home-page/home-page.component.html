@@ -2,10 +2,52 @@
 <div class="home-container">
 
     <!-- Title can be styled more -->
-    <h1 class="main-title">Azure Search Experience</h1>
+    <h1 class="main-title">Angular Search Experience</h1>
   
     <!-- The search component - its width/centering is controlled by CSS below -->
-    <app-azure-search></app-azure-search>
+       <!--
+    Using the library component:
+    - Bind data and required field names.
+    - Bind optional configuration inputs.
+    - Bind outputs to handler methods in HomePageComponent.
+    - Provide a custom template for result items.
+  -->
+  <ncs-category-search
+  [data]="searchData"
+  [trackByIdField]="idField"
+  [nameField]="displayNameField"
+  [categoryField]="categoryGroupField"
+  [friendlyIdField]="optionalFriendlyIdField"
+  [placeholder]="customPlaceholder"
+  [resultsBatchSize]="customBatchSize"
+  [enableRecentSearches]="true"
+  [showBottomShowAllButton]="true"
+  [resultItemTemplate]="customResultItem"
+  (itemSelected)="onSearchResultSelected($event)"
+  (recentSearchSelected)="onRecentSelected($event)"
+  (navigateToCategory)="onCategoryNavigate($event)"
+  (navigateToAll)="onAllResultsNavigate($event)"
+  (searchCleared)="onSearchCleared()"
+  (searchTermChanged)="onTermChanged($event)"
+  (dropdownVisibilityChanged)="onDropdownVisibilityChanged($event)"
+>    <!-- Optional: Content projection for input prefix/suffix if library supports it -->
+<!-- <ng-container ncsInputPrefix>...</ng-container> -->
+
+</ncs-category-search>
+
+    <!-- *** NEW: Powered By Section *** -->
+    <div class="powered-by-container">
+      <div class="powered-by-animation">
+          <!-- Simple geometric shapes for animation -->
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+      </div>
+      <p class="powered-by-text">
+          Search powered by <a href="https://www.npmjs.com/package/@r-ko/ngx-category-search" target="_blank" rel="noopener noreferrer">&#64;r-ko/ngx-category-search</a>
+      </p>
+  </div>
+  <!-- *** END: Powered By Section *** -->
   
     <!-- Container for vertically stacked cards -->
     <div class="cards-container">
@@ -34,3 +76,25 @@
     </div>
   
   </div>
+
+  <!-- ############################################# -->
+<!--   Custom Template Definition for Result Items -->
+<!-- ############################################# -->
+<ng-template #customResultItem let-item let-term="term">
+  <!-- Custom rendering using the data item passed in context ($implicit = item) -->
+  <!-- Example: Using a specific icon based on type -->
+  <span class="result-icon custom-icon" aria-hidden="true">
+    <!-- Add logic here if you want different icons based on item[categoryGroupField] -->
+     <!-- {{ item[categoryGroupField] === 'App Service' ? '⚙️' : '📄' }} -->
+  </span>
+
+  <!-- Display friendly ID -->
+  <span class="ncs-result-friendly-id">{{ getFriendlyId(item) }}</span>
+
+  <!-- Display details -->
+  <div class="ncs-result-details">
+     <!-- Use HighlightPipe from library -->
+    <span class="ncs-result-name" [innerHTML]="item[displayNameField]"></span>
+    <!-- <span class="ncs-result-type">({{ getCategory(item) }})</span> -->
+  </div>
+</ng-template>

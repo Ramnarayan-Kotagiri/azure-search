@@ -1,19 +1,127 @@
-import { Component } from '@angular/core';
-import { AzureSearchComponent } from '../azure-search/azure-search.component'; // Adjust path
+import { Component, inject } from '@angular/core'; // Import inject
 import { CommonModule } from '@angular/common'; // Often needed
 import { MarkdownModule } from 'ngx-markdown'; // <-- Import MarkdownModule
+import { CategorySearchComponent, SearchDataItem } from '@r-ko/ngx-category-search'; // Adjust path if needed
 
+
+// --- Define the specific data structure for THIS application ---
+interface AppSpecificData extends SearchDataItem {
+    id: string;
+    friendlyId: string;
+    name: string;
+    type: 'App Service' | 'Application gateways' | 'Cloud services (classic)' | 'Function App' | 'Web App' | 'Application Insights' | 'Availability test' | 'Virtual Machine' | 'Storage Account' | 'SQL Database';
+  }
+  
+  // --- Generator Function (for clarity and potential reuse) ---
+  function generateAppData(itemsPerCategory: number = 25): AppSpecificData[] {
+      const data: AppSpecificData[] = [];
+      let globalIdCounter = 1;
+  
+      const types: AppSpecificData['type'][] = [
+          'App Service', 'Application gateways', 'Cloud services (classic)', 'Function App', 'Web App',
+          'Application Insights', 'Availability test', 'Virtual Machine', 'Storage Account', 'SQL Database'
+      ];
+  
+      const prefixes: { [key in AppSpecificData['type']]: string } = {
+          'App Service': 'AS',
+          'Application gateways': 'AG',
+          'Cloud services (classic)': 'CS',
+          'Function App': 'FA',
+          'Web App': 'WA',
+          'Application Insights': 'AI',
+          'Availability test': 'AT',
+          'Virtual Machine': 'VM',
+          'Storage Account': 'ST',
+          'SQL Database': 'DB'
+      };
+  
+      // More diverse components/roles
+      const nameParts1: { [key in AppSpecificData['type']]: string[] } = {
+          'App Service': ['User API', 'Product Service', 'Order API', 'Reporting Service', 'Image Processor', 'Notification Hub', 'Backend Worker', 'Sync Service', 'Auth Service', 'Catalog API'],
+          'Application gateways': ['Public WAF', 'Internal API Gateway', 'Admin Portal Access', 'Partner Integration', 'Frontend Load Balancer', 'High Traffic Endpoint', 'Regional Gateway', 'API Security'],
+          'Cloud services (classic)': ['Worker Role Batch', 'Web Role Frontend', 'Data Migration Task', 'Legacy Processing Unit', 'Archived Web Service', 'Classic Data Sync'],
+          'Function App': ['Queue Trigger', 'Image Resize Function', 'Data Validation Hook', 'Timer Job', 'Webhook Receiver', 'Auth Callback', 'Log Parser', 'Event Handler', 'CosmosDB Trigger'],
+          'Web App': ['Customer Dashboard', 'Admin Console', 'Public Website', 'Internal Reporting Tool', 'API Documentation Site', 'Live Status Monitor', 'Support Forum App', 'Marketing Campaign Site'],
+          'Application Insights': ['Core App Monitoring', 'API Endpoint Analytics', 'Background Task Tracker', 'User Behavior Insights', 'Error Diagnostics', 'Development Telemetry', 'Staging Performance'],
+          'Availability test': ['Homepage Ping', 'Login API Check', 'Core Feature Test', 'External Service Monitor', 'Database Health', 'Payment Gateway Test', 'CDN Latency Check'],
+          'Virtual Machine': ['Build Server CI', 'Web Server IIS', 'SQL Server Instance', 'Redis Cache Node', 'Dev Environment Box', 'UAT Test Machine', 'Data Analytics Server', 'Jump Box Secure'],
+          'Storage Account': ['User Content Blobs', 'Archived Database Backups', 'Media Files CDN', 'Cold Storage Archive', 'Data Lake Gen2 Raw', 'App Configuration Blobs', 'Processed Results Store', 'Log Storage'],
+          'SQL Database': ['User Profiles DB', 'Product Catalog Main', 'Order Management System', 'Inventory Tracking', 'Audit Log Store', 'Reporting Staging DB', 'App Configuration Store', 'Session Cache DB']
+      };
+  
+      // Environments, Regions, Qualifiers
+      const nameParts2 = ['Prod', 'Dev', 'Test', 'Staging', 'UAT', 'Demo', 'POC', 'DR', 'QA'];
+      const nameParts3 = ['East US', 'West Europe', 'Central India', 'Australia East', 'North Europe', 'Japan West', 'Brazil South', 'UK South'];
+      const nameParts4 = ['Primary', 'Secondary', 'Read Replica', 'Active', 'Passive', 'Shared', 'Dedicated', 'Internal', 'External', 'Core', 'Edge', 'V1', 'V2', 'New', 'Legacy'];
+  
+      // Function to get random element
+      const getRandom = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+  
+      types.forEach(type => {
+          const typePrefix = prefixes[type];
+          let typeCounter = 1;
+          for (let i = 1; i <= itemsPerCategory; i++) {
+              // Combine parts ensuring variety and avoiding direct repetition if possible
+              const part1 = getRandom(nameParts1[type]);
+              let part2 = getRandom(nameParts2);
+              let part3 = getRandom(nameParts3);
+              let part4 = getRandom(nameParts4);
+  
+              // Simple logic to reduce direct repetition (optional)
+              if (part3 === part2) part3 = getRandom(nameParts3);
+              if (part4 === part3 || part4 === part2) part4 = getRandom(nameParts4);
+  
+              const itemName = `${part1} ${part2} ${part3} ${part4}`.trim(); // Combine and trim potential extra space
+  
+              data.push({
+                  id: `${typePrefix.toLowerCase()}${globalIdCounter}`, // Globally unique simple ID
+                  friendlyId: `${typePrefix}${1000 + typeCounter + (types.indexOf(type) * itemsPerCategory)}`, // Unique Friendly ID per type
+                  name: itemName,
+                  type: type
+              });
+              globalIdCounter++;
+              typeCounter++;
+          }
+      });
+  
+      return data;
+  }
+  
+  // --- Provide Mock Data (Now lives in the consuming app) ---
+  // (Ideally, this would come from a service)
+  export const MOCK_APP_DATA: AppSpecificData[] = generateAppData(25); // Generate 25 items per category
+  
+  // Optional: Log the generated count
+  console.log(`Generated ${MOCK_APP_DATA.length} mock AppSpecificData items.`);
 @Component({
   selector: 'app-home-page',
   imports: [
     CommonModule,
-    AzureSearchComponent, // Import the search component here
-    MarkdownModule
+    // AzureSearchComponent, // Import the search component here
+    MarkdownModule,
+    CategorySearchComponent
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
 })
 export class HomePageComponent {
+
+      // Inject Router for handling navigation events from the library
+//   private router = inject(Router);
+
+  // --- Data for the Library Component ---
+  searchData: AppSpecificData[] = MOCK_APP_DATA; // Provide the data
+
+  // --- Field Name Configuration ---
+  // Tell the library component which fields in AppSpecificData to use
+  idField: keyof AppSpecificData = 'id';
+  displayNameField: keyof AppSpecificData = 'name';
+  categoryGroupField: keyof AppSpecificData = 'type';
+  optionalFriendlyIdField: keyof AppSpecificData = 'friendlyId';
+
+  // --- Example Configuration Overrides ---
+  customPlaceholder = "Search Components, Services, Data...";
+  customBatchSize = 5;
   // Markdown content for Card 1
 // Updated Markdown content for Card 1 using the detailed prompt
 promptCardMarkdown = `
@@ -128,4 +236,65 @@ I need Angular (version 17) code for a standalone component named \`AzureSearchC
       *   \`Staging\`
       *   \`West Europe\`
   `;
+
+    // --- Event Handlers for Library Outputs ---
+
+    onSearchResultSelected(selectedItem: AppSpecificData): void {
+        console.log('HomePage: Item Selected!', selectedItem);
+        // Example: Navigate to a detail page for this item
+        // this.router.navigate(['/details', selectedItem.id]);
+        alert(`You selected: ${selectedItem[this.displayNameField]}`); // Simple alert for demo
+      }
+    
+      onRecentSelected(term: string): void {
+        console.log('HomePage: Recent search selected:', term);
+        // No action needed here usually, as the library component updates its input
+      }
+    
+      onCategoryNavigate(event: { term: string; category: string }): void {
+        console.log('HomePage: Navigate To Category Requested', event);
+        // Navigate using the application's router
+        // this.router.navigate(['/search'], { // Your app's search results route
+        //   queryParams: {
+        //     q: event.term,
+        //     category: event.category
+        //   }
+        // });
+      }
+    
+      onAllResultsNavigate(event: { term: string }): void {
+        console.log('HomePage: Navigate To All Results Requested', event);
+        // Navigate using the application's router
+        // this.router.navigate(['/search'], { // Your app's search results route
+        //   queryParams: {
+        //     q: event.term
+        //     // No category specified
+        //   }
+        // });
+      }
+    
+      onSearchCleared(): void {
+        console.log('HomePage: Search Cleared');
+        // Perform any app-specific actions needed when search is cleared
+      }
+    
+      onTermChanged(term: string): void {
+          console.log('HomePage: Debounced search term changed:', term);
+          // Could potentially trigger other actions in the app based on the term
+      }
+    
+      onDropdownVisibilityChanged(isVisible: boolean): void {
+          console.log('HomePage: Dropdown visibility changed:', isVisible);
+      }
+    
+      // --- Other Methods ---
+      getFriendlyId(item: AppSpecificData): string {
+         // Helper for the custom template, accessing the configured field
+         return item[this.optionalFriendlyIdField] ?? '';
+      }
+    
+      getCategory(item: AppSpecificData): string {
+         // Helper for the custom template
+         return item[this.categoryGroupField] ?? 'Unknown';
+      }
 }
