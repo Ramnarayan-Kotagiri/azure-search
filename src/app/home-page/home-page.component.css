@@ -277,3 +277,279 @@ ncs-category-search {
     opacity: 0.6;
   }
 }
+
+/* Add this to your CSS file */
+
+/* Visualization Container */
+.visualization-container {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  margin: 30px auto;
+  max-width: 900px;
+}
+
+.visualization-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Search Flow Animation */
+.search-flow-animation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 300px;
+  margin-bottom: 30px;
+}
+
+/* Data Source */
+.data-source {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 15px;
+  width: 30%;
+}
+
+.data-node {
+  background-color: #ffffff;
+  border-radius: 8px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.data-node.highlight {
+  border-color: #0078d4;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.2);
+  z-index: 1;
+}
+
+.node-content {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px;
+  text-align: center;
+}
+
+/* Flow Connector */
+.flow-connector {
+  position: relative;
+  height: 100%;
+  width: 15%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connector-line {
+  width: 100%;
+  height: 4px;
+  background-color: #e0e0e0;
+  position: relative;
+  overflow: hidden;
+}
+
+.connector-line.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, #0078d4, transparent);
+  animation: flowAnimation 1.5s infinite;
+}
+
+.pulse-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #0078d4;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.pulse-dot.active {
+  animation: pulseAnimation 2s infinite;
+}
+
+.pulse-dot:nth-child(2) {
+  left: 30%;
+  animation-delay: 0.3s;
+}
+
+.pulse-dot:nth-child(3) {
+  left: 60%;
+  animation-delay: 0.6s;
+}
+
+/* Result Container */
+.result-container {
+  width: 40%;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 15px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.result-icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.result-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #888;
+  font-size: 18px;
+}
+
+.loading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 120, 212, 0.2);
+  border-radius: 50%;
+  border-top-color: #0078d4;
+  animation: spin 1s linear infinite;
+}
+
+/* Search Controls */
+.search-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.control-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.control-button {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.control-button:hover {
+  background-color: #f5f7fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button-icon {
+  font-size: 18px;
+}
+
+.info-text {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: s;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flowAnimation {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulseAnimation {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}

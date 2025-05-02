@@ -2,7 +2,7 @@
 <div class="home-container">
 
     <!-- Title can be styled more -->
-    <h1 class="main-title">Angular Search Experience</h1>
+    <h1 class="main-title">ngx-category-search</h1>
   
     <!-- The search component - its width/centering is controlled by CSS below -->
        <!--
@@ -13,7 +13,8 @@
     - Provide a custom template for result items.
   -->
   <ncs-category-search
-  [data]="searchData"
+  [data]="initialDataForCategories"
+  [searchResults]="searchData"
   [trackByIdField]="idField"
   [nameField]="displayNameField"
   [categoryField]="categoryGroupField"
@@ -23,17 +24,17 @@
   [enableRecentSearches]="true"
   [showBottomShowAllButton]="true"
   [resultItemTemplate]="customResultItem"
+  (searchRequested)="onSearchRequested($event)"
   (itemSelected)="onSearchResultSelected($event)"
   (recentSearchSelected)="onRecentSelected($event)"
+  (categorySelected)="onCategorySelected($event)"
   (navigateToCategory)="onCategoryNavigate($event)"
   (navigateToAll)="onAllResultsNavigate($event)"
   (searchCleared)="onSearchCleared()"
   (searchTermChanged)="onTermChanged($event)"
   (dropdownVisibilityChanged)="onDropdownVisibilityChanged($event)"
->    <!-- Optional: Content projection for input prefix/suffix if library supports it -->
-<!-- <ng-container ncsInputPrefix>...</ng-container> -->
-
-</ncs-category-search>
+  [showBottomShowAllButton]="false"
+  ></ncs-category-search>
 
     <!-- *** NEW: Powered By Section *** -->
     <div class="powered-by-container">
@@ -49,52 +50,109 @@
   </div>
   <!-- *** END: Powered By Section *** -->
   
-    <!-- Container for vertically stacked cards -->
-    <div class="cards-container">
-  
-      <!-- Card 1: Prompt -->
-      <div class="card prompt-card">
-        <h2>
-            <span class="card-icon"><i class="fas fa-lightbulb"></i></span> <!-- fas for Solid style -->
+<!-- Replace the cards-container section with this: -->
 
-          Prompt Used
-        </h2>
-        <!-- Use the markdown directive -->
-        <markdown [data]="promptCardMarkdown"></markdown>
-      </div>
+<!-- Interactive Data Visualization -->
+<div class="visualization-container">
+  <h2 class="visualization-title">Search Data Visualization</h2>
   
-      <!-- Card 2: Search Examples -->
-      <div class="card examples-card">
-        <h2>
-            <span class="card-icon"><i class="fas fa-search"></i></span> <!-- fas for Solid style -->
-          Search Examples
-        </h2>
-        <!-- Use the markdown directive -->
-        <markdown [data]="searchExamplesCardMarkdown"></markdown>
+  <!-- Search Flow Animation -->
+  <div class="search-flow-animation">
+    <div class="data-source">
+      <div class="data-node" *ngFor="let i of [1,2,3,4,5,6,7,8]" 
+           [class.highlight]="animationState.highlightedNodes.includes(i)">
+        <div class="node-content">{{ getNodeLabel(i) }}</div>
       </div>
-  
     </div>
+    
+    <div class="flow-connector">
+      <div class="connector-line" [class.active]="animationState.flowActive"></div>
+      <div class="pulse-dot" *ngFor="let i of [1,2,3]" 
+           [class.active]="animationState.flowActive"></div>
+    </div>
+    
+    <div class="result-container">
+      <div class="result-item" *ngFor="let item of animationState.results"
+           [class.fade-in]="true">
+        <span class="result-icon">{{ getCategoryIcon(item.category) }}</span>
+        <span class="result-text">{{ item.name }}</span>
+      </div>
+      <div class="empty-state" *ngIf="animationState.results.length === 0 && !animationState.loading">
+        Type to search!
+      </div>
+      <div class="loading-indicator" *ngIf="animationState.loading">
+        <div class="spinner"></div>
+        <span>Processing...</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Interactive Controls -->
+  <div class="search-controls">
+    <div class="control-group">
+      <button class="control-button" (click)="triggerAnimation('marutiSuzuki')">
+        <span class="button-icon">🚗</span> Maruti Suzuki
+      </button>
+      <button class="control-button" (click)="triggerAnimation('hyundai')">
+        <span class="button-icon">🚙</span> Hyundai
+      </button>
+      <button class="control-button" (click)="triggerAnimation('tata')">
+        <span class="button-icon">🚚</span> Tata
+      </button>
+    </div>
+    <div class="info-text">
+      <p>Click buttons above to see how search works across different car brands!</p>
+    </div>
+  </div>
+</div>
   
   </div>
 
   <!-- ############################################# -->
 <!--   Custom Template Definition for Result Items -->
 <!-- ############################################# -->
+<!-- Update the custom result item template -->
 <ng-template #customResultItem let-item let-term="term">
   <!-- Custom rendering using the data item passed in context ($implicit = item) -->
-  <!-- Example: Using a specific icon based on type -->
   <span class="result-icon custom-icon" aria-hidden="true">
     <!-- Add logic here if you want different icons based on item[categoryGroupField] -->
-     <!-- {{ item[categoryGroupField] === 'App Service' ? '⚙️' : '📄' }} -->
   </span>
 
-  <!-- Display friendly ID -->
-  <span class="ncs-result-friendly-id">{{ getFriendlyId(item) }}</span>
+  <!-- Display friendly ID only if ID exists, otherwise show nothing here -->
+  <span class="ncs-result-friendly-id" *ngIf="item.id !== null" [innerHTML]="getFriendlyId(item) | highlight: term"></span>
 
   <!-- Display details -->
-  <div class="ncs-result-details">
-     <!-- Use HighlightPipe from library -->
-    <span class="ncs-result-name" [innerHTML]="item[displayNameField]"></span>
-    <!-- <span class="ncs-result-type">({{ getCategory(item) }})</span> -->
+  <div class="ncs-result-details" [ngClass]="{'full-width': item.id === null}">
+    <!-- Use HighlightPipe from library -->
+    <span class="ncs-result-name" [innerHTML]="item[displayNameField] | highlight: term"></span>
   </div>
+</ng-template>
+
+<!-- ############################################# -->
+<!--   NEW: Custom Template Definition for Chiclets -->
+<!-- ############################################# -->
+<ng-template #customChiclet let-ctx>
+  <!-- ctx: { category: string, count: number, isActive: boolean, type: 'initial' | 'results' } -->
+  <button type="button"
+          class="my-custom-chiclet"
+          [class.active]="ctx.isActive"
+          [disabled]="ctx.type === 'initial'"
+          > <!-- REMOVED: (mousedown)="selectCategory(ctx.category, $event)" -->
+    <!-- Example: Add an icon based on category -->
+    <span class="chiclet-icon">
+      {{ ctx.category === 'Maruti Suzuki' ? '🚗' : 
+         ctx.category === 'Hyundai' ? '🚙' : 
+         ctx.category === 'Renault' ? '🚘' : 
+         ctx.category === 'Toyota' ? '🚐' : 
+         ctx.category === 'Tata' ? '🚚' : 
+         ctx.category === 'Mahindra' ? '🚜' : 
+         ctx.category === 'Honda' ? '🏍️' : 
+         ctx.category === 'Kia' ? '🚗' : 
+         ctx.category === 'MG' ? '🚓' : 
+         ctx.category === 'Volkswagen' ? '🚕' : 
+         ctx.category === 'Car Feature' ? '🔧' : '🔍' }}
+    </span>
+    {{ ctx.category }}
+    <span class="my-custom-chiclet-count">[{{ ctx.count }}]</span>
+  </button>
 </ng-template>
