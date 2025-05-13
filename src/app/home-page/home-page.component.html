@@ -1,158 +1,143 @@
-<!-- home-page.component.html -->
 <div class="home-container">
+  <h1 class="main-title">ngx-category-search</h1>
 
-    <!-- Title can be styled more -->
-    <h1 class="main-title">ngx-category-search</h1>
-  
-    <!-- The search component - its width/centering is controlled by CSS below -->
-       <!--
-    Using the library component:
-    - Bind data and required field names.
-    - Bind optional configuration inputs.
-    - Bind outputs to handler methods in HomePageComponent.
-    - Provide a custom template for result items.
-  -->
   <ncs-category-search
-  [data]="initialDataForCategories"
-  [searchResults]="searchData"
-  [trackByIdField]="idField"
-  [nameField]="displayNameField"
-  [categoryField]="categoryGroupField"
-  [friendlyIdField]="optionalFriendlyIdField"
-  [placeholder]="customPlaceholder"
-  [resultsBatchSize]="customBatchSize"
-  [enableRecentSearches]="true"
-  [showBottomShowAllButton]="true"
-  [resultItemTemplate]="customResultItem"
-  (searchRequested)="onSearchRequested($event)"
-  (itemSelected)="onSearchResultSelected($event)"
-  (recentSearchSelected)="onRecentSelected($event)"
-  (categorySelected)="onCategorySelected($event)"
-  (navigateToCategory)="onCategoryNavigate($event)"
-  (navigateToAll)="onAllResultsNavigate($event)"
-  (searchCleared)="onSearchCleared()"
-  (searchTermChanged)="onTermChanged($event)"
-  (dropdownVisibilityChanged)="onDropdownVisibilityChanged($event)"
-  [showBottomShowAllButton]="false"
-  ></ncs-category-search>
+    [data]="initialCategoryData$ | async"
+    [searchResults]="searchData"
+    [trackByIdField]="idField"
+    [nameField]="displayNameField"
+    [categoryField]="categoryGroupField"
+    [friendlyIdField]="optionalFriendlyIdField"
+    [placeholder]="customPlaceholder"
+    [resultsBatchSize]="customBatchSize"
+    [enableRecentSearches]="true"
+    [showBottomShowAllButton]="false"
+    [showSearchForTermLine]="true"
+    [searchForTermFormat]="'Search for <b>{term}</b>'"
+    (searchForTermClicked)="handleSearchForTermGlobal($event)"
+    [showChicletContainerBorder]="false"
+    [allCategoryLabel]="'All'"
+    [recentSearchesLabel]="'RECENT SEARCHES'"
+    [noResultsLabel]="'No services match your search for'"
+    [showInitialCategories]="true"
+    [showResultCategories]="true"
+    [hideAllChicletInitial]="false"
 
-    <!-- *** NEW: Powered By Section *** -->
-    <div class="powered-by-container">
-      <div class="powered-by-animation">
-          <!-- Simple geometric shapes for animation -->
-          <div class="shape shape-1"></div>
-          <div class="shape shape-2"></div>
-          <div class="shape shape-3"></div>
-      </div>
-      <p class="powered-by-text">
-          Search powered by <a href="https://www.npmjs.com/package/@r-ko/ngx-category-search" target="_blank" rel="noopener noreferrer">&#64;r-ko/ngx-category-search</a>
-      </p>
-  </div>
-  <!-- *** END: Powered By Section *** -->
-  
-<!-- Replace the cards-container section with this: -->
+    [resultItemTemplate]="customResultItemTemplate"
+    [recentItemTemplate]="customRecentItemTemplate"
+    [chicletContentTemplate]="customChicletContentTemplate"
+    [categoryHeaderContentTemplate]="customCategoryHeaderContentTemplate"
+    [noResultsTemplate]="customNoResultsTemplate"
+    [loadingTemplate]="customLoadingTemplate"
 
-<!-- Interactive Data Visualization -->
-<div class="visualization-container">
-  <h2 class="visualization-title">Search Data Visualization</h2>
-  
-  <!-- Search Flow Animation -->
-  <div class="search-flow-animation">
-    <div class="data-source">
-      <div class="data-node" *ngFor="let i of [1,2,3,4,5,6,7,8]" 
-           [class.highlight]="animationState.highlightedNodes.includes(i)">
-        <div class="node-content">{{ getNodeLabel(i) }}</div>
+    (searchRequested)="onSearchRequested($event)"
+    (itemSelected)="onSearchResultSelected($event)"
+    (recentSearchSelected)="onRecentSelected($event)"
+    (categorySelected)="onCategorySelected($event)"
+    (navigateToCategory)="onCategoryNavigate($event)"
+    (navigateToAll)="onAllResultsNavigate($event)"
+    (searchCleared)="onSearchCleared()"
+    (searchTermChanged)="onTermChanged($event)"
+    (dropdownVisibilityChanged)="onDropdownVisibilityChanged($event)"
+    (enterKeyPressed)="onEnterPressed($event)"
+    (searchForTermClicked)="onSearchForTermClicked($event)">
+  </ncs-category-search>
+
+  <div class="powered-by-container">
+    <p class="powered-by-text">
+      Search powered by <a href="https://www.npmjs.com/package/@r-ko/ngx-category-search" target="_blank" rel="noopener noreferrer">&#64;r-ko/ngx-category-search</a>
+    </p>
+  </div>
+
+  <!-- NEW ANIMATION: Pulsating Network & Refinement -->
+  <div class="pnr-visualization-container">
+    <h3 class="pnr-visualization-title">Search Mechanism Visualized</h3>
+    <div class="pnr-search-input-stage">
+      <div class="pnr-search-bar-anim">
+        <span class="pnr-search-term-anim"></span>
       </div>
     </div>
-    
-    <div class="flow-connector">
-      <div class="connector-line" [class.active]="animationState.flowActive"></div>
-      <div class="pulse-dot" *ngFor="let i of [1,2,3]" 
-           [class.active]="animationState.flowActive"></div>
+
+    <div class="pnr-categories-stage">
+      <div class="pnr-category-node-wrapper pnr-node-wrapper-1">
+        <div class="pnr-category-node">Compute</div>
+        <div class="pnr-connection-line pnr-line-1"></div>
+      </div>
+      <div class="pnr-category-node-wrapper pnr-node-wrapper-2">
+        <div class="pnr-category-node">Storage</div>
+        <div class="pnr-connection-line pnr-line-2"></div>
+      </div>
+      <div class="pnr-category-node-wrapper pnr-node-wrapper-3">
+        <div class="pnr-category-node">Databases</div>
+        <div class="pnr-connection-line pnr-line-3"></div>
+      </div>
     </div>
-    
-    <div class="result-container">
-      <div class="result-item" *ngFor="let item of animationState.results"
-           [class.fade-in]="true">
-        <span class="result-icon">{{ getCategoryIcon(item.category) }}</span>
-        <span class="result-text">{{ item.name }}</span>
+
+    <div class="pnr-processing-stage">
+      <div class="pnr-processing-core">
+        <div class="pnr-core-pulse"></div>
+        <div class="pnr-core-sparkle pnr-sparkle-1"></div>
+        <div class="pnr-core-sparkle pnr-sparkle-2"></div>
+        <div class="pnr-core-sparkle pnr-sparkle-3"></div>
       </div>
-      <div class="empty-state" *ngIf="animationState.results.length === 0 && !animationState.loading">
-        Type to search!
-      </div>
-      <div class="loading-indicator" *ngIf="animationState.loading">
-        <div class="spinner"></div>
-        <span>Processing...</span>
-      </div>
+    </div>
+
+    <div class="pnr-results-stage">
+      <div class="pnr-result-item-anim pnr-result-1"><span>Optimized Result A</span></div>
+      <div class="pnr-result-item-anim pnr-result-2"><span>Refined Result B</span></div>
     </div>
   </div>
-  
-  <!-- Interactive Controls -->
-  <div class="search-controls">
-    <div class="control-group">
-      <button class="control-button" (click)="triggerAnimation('marutiSuzuki')">
-        <span class="button-icon">🚗</span> Maruti Suzuki
-      </button>
-      <button class="control-button" (click)="triggerAnimation('hyundai')">
-        <span class="button-icon">🚙</span> Hyundai
-      </button>
-      <button class="control-button" (click)="triggerAnimation('tata')">
-        <span class="button-icon">🚚</span> Tata
-      </button>
-    </div>
-    <div class="info-text">
-      <p>Click buttons above to see how search works across different car brands!</p>
-    </div>
-  </div>
+  <!-- END: Pulsating Network & Refinement Animation -->
+
 </div>
-  
-  </div>
 
-  <!-- ############################################# -->
-<!--   Custom Template Definition for Result Items -->
-<!-- ############################################# -->
-<!-- Update the custom result item template -->
+<!-- Custom Template Definitions -->
+
+<!-- Result Item Template -->
 <ng-template #customResultItem let-item let-term="term">
-  <!-- Custom rendering using the data item passed in context ($implicit = item) -->
-  <span class="result-icon custom-icon" aria-hidden="true">
-    <!-- Add logic here if you want different icons based on item[categoryGroupField] -->
-  </span>
-
-  <!-- Display friendly ID only if ID exists, otherwise show nothing here -->
-  <span class="ncs-result-friendly-id" *ngIf="item.id !== null" [innerHTML]="getFriendlyId(item) | highlight: term"></span>
-
-  <!-- Display details -->
-  <div class="ncs-result-details" [ngClass]="{'full-width': item.id === null}">
-    <!-- Use HighlightPipe from library -->
-    <span class="ncs-result-name" [innerHTML]="item[displayNameField] | highlight: term"></span>
+  <div class="custom-result-item">
+    <div class="custom-result-content">
+      <div class="custom-result-header">
+        <span class="custom-result-id" [innerHTML]="item[optionalFriendlyIdField] ? (item[optionalFriendlyIdField] | multiWordHighlight: term) : (item[idField] | multiWordHighlight: term)"></span>
+        <span class="custom-result-name" [innerHTML]="item[displayNameField] | multiWordHighlight: term"></span>
+      </div>
+    </div>
   </div>
 </ng-template>
 
-<!-- ############################################# -->
-<!--   NEW: Custom Template Definition for Chiclets -->
-<!-- ############################################# -->
-<ng-template #customChiclet let-ctx>
-  <!-- ctx: { category: string, count: number, isActive: boolean, type: 'initial' | 'results' } -->
-  <button type="button"
-          class="my-custom-chiclet"
-          [class.active]="ctx.isActive"
-          [disabled]="ctx.type === 'initial'"
-          > <!-- REMOVED: (mousedown)="selectCategory(ctx.category, $event)" -->
-    <!-- Example: Add an icon based on category -->
-    <span class="chiclet-icon">
-      {{ ctx.category === 'Maruti Suzuki' ? '🚗' : 
-         ctx.category === 'Hyundai' ? '🚙' : 
-         ctx.category === 'Renault' ? '🚘' : 
-         ctx.category === 'Toyota' ? '🚐' : 
-         ctx.category === 'Tata' ? '🚚' : 
-         ctx.category === 'Mahindra' ? '🚜' : 
-         ctx.category === 'Honda' ? '🏍️' : 
-         ctx.category === 'Kia' ? '🚗' : 
-         ctx.category === 'MG' ? '🚓' : 
-         ctx.category === 'Volkswagen' ? '🚕' : 
-         ctx.category === 'Car Feature' ? '🔧' : '🔍' }}
-    </span>
-    {{ ctx.category }}
-    <span class="my-custom-chiclet-count">[{{ ctx.count }}]</span>
-  </button>
+<!-- Chiclet Content Template -->
+<ng-template #customChicletContent let-ctx>
+  <span class="custom-chiclet-name">{{ ctx.category }}</span>
+  <span class="custom-chiclet-count">({{ ctx.count }})</span>
+</ng-template>
+
+<!-- Category Header Content Template -->
+<ng-template #customCategoryHeaderContent let-ctx>
+  <span class="custom-header-name">{{ ctx.category | uppercase }}</span>
+  <span class="custom-header-count">[{{ ctx.count }} items]</span>
+</ng-template>
+
+<!-- Recent Search Item Template -->
+<ng-template #customRecentItem let-term>
+  <div class="custom-recent-item">
+    <span class="custom-recent-term">{{ term }}</span>
+  </div>
+</ng-template>
+
+<!-- No Results Template -->
+<ng-template #customNoResults let-term>
+  <div class="custom-no-results-wrapper">
+    <div class="custom-no-results">
+      <p>No services found for "<strong>{{ term }}</strong>".</p>
+      <p>Please try a different search term.</p>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Loading Template -->
+<ng-template #customLoading>
+  <div class="custom-loading">
+    <div class="custom-loading-spinner"></div>
+    <p>Loading results...</p>
+  </div>
 </ng-template>
